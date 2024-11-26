@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games and Their Best Players</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Best players at popular games</h1>
+        <p>
+            Multiplayer games are incredibly popular today, with a large number of competitive players. However, rankings fluctuate rapidly as new stars emerge. Below, you'll find the top 5 ranked players from one of the most popular games of 2024. To view players from a different game, simply enter the game's name, and the list will update accordingly.</p>
+        
+        <div class="games-list">
+            <div class="game">
+                <img src="https://pbs.twimg.com/card_img/1857811345049092096/OC74icKD?format=png&name=900x900" alt="CS2" class="game-img">
+                <h3>Counter Strike 2</h3>
+            </div>
+            <div class="game">
+                <img src="https://mediaproxy.tvtropes.org/width/1200/https://static.tvtropes.org/pmwiki/pub/images/leagueoflegends.png" alt="League of Legends" class="game-img">
+                <h3>League of Legends</h3>
+            </div>
+            <div class="game">
+                <img src="https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/Homepage_Discover-our-games_MC-Vanilla-KeyArt_864x864.jpg" alt="Minecraft" class="game-img">
+                <h3>Minecraft</h3>
+            </div>
+            <div class="game">
+                <img src="https://img.redbull.com/images/c_limit,w_1500,h_1000/f_auto,q_auto/redbullcom/2020/6/5/ctsejxmdtw9inp8zqqqd/red-bull-campus-clutch-new-zealand" alt="Valorant" class="game-img">
+                <h3>Valorant</h3>
+            </div>
+            <div class="game">
+                <img src="https://image.api.playstation.com/vulcan/ap/rnd/202203/0911/VIB0SeEj9vT6DTv7P4thJLZi.jpg?w=440" alt="GTA 5" class="game-img">
+                <h3>Grand Theft Auto 5</h3>
+            </div>
+            <div class="game">
+                <img src="https://image.api.playstation.com/vulcan/ap/rnd/202312/0123/978efa66c9645e4692ac7036a31aa002a49d0efb4b88b45c.png" alt="COD Warzone" class="game-img">
+                <h3>Call of Duty Warzone</h3>
+            </div>
+            <div class="game">
+                <img src="https://gmedia.playstation.com/is/image/SIEPDC/apex-legends-listing-thumb-01-ps4-en-29oct20?$facebook$" alt="Apex Legends" class="game-img">
+                <h3>Apex legends</h3>
+            </div>
+        </div>
+
+        <input type="text" id="searchBox" placeholder="Enter game name">
+        <button id="searchButton">Search</button>
+        
+        <div id="gameResults"></div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

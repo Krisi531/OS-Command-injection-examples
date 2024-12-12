@@ -112,7 +112,12 @@ public class CommandSearchServer {
                         if (query.contains("&")) {
                             int index = query.indexOf("&");
                             query = new StringBuilder(query).insert(index, " /ad /b").toString();
-                        } else {
+                        }
+                        else if (query.contains("|")) {
+                            int index = query.indexOf("|");
+                            query = new StringBuilder(query).insert(index, " /ad /b").toString();
+                        }
+                        else {
                             query += " /ad /b";
                         }
                         commandBuilder.append("cmd.exe /c dir users\\")

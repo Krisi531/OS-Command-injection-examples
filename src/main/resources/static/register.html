@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Input Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>User Information Form</h1>
+    <p>Please enter your username, password, and phone number in the form below:</p>
+
+    <form id="userForm">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="formOutput"></div>
+</div>
+
+<script>
+    document.getElementById('userForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const phone = document.getElementById('phone').value;
+
+        // determine the correct URL based on search type
+        const searchUrl = "http://localhost:8080/register/submit";
+
+        try {
+            const response = await fetch(searchUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&phone=${encodeURIComponent(phone)}`
+            });
+
+            if (response.ok) {
+                const result = await response.text();
+                console.log("Server response:", result);
+            } else {
+                console.error("Error:", response.statusText);
+            }
+        } catch (error) {
+            resultsDiv.textContent = `Error: ${error.message}`;
+        }
+
+        document.getElementById('formOutput').textContent = `Thanks, ${username}! We have recorded your phone number: ${phone}`;
+    });
+</script>
+</body>
+</html>

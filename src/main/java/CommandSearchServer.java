@@ -4,9 +4,12 @@ import com.sun.net.httpserver.HttpExchange;
 
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class CommandSearchServer {
@@ -75,6 +78,7 @@ public class CommandSearchServer {
 
         server.createContext("/directory/search", new SearchHandlerDirectory());
         server.createContext("/search", new SearchHandler());
+        server.createContext("/register/submit", new RegisterHandler());
 
         server.setExecutor(null); // default executor
         System.out.println("Server started on port 8080");
@@ -108,10 +112,15 @@ public class CommandSearchServer {
                         if (query.contains("&")) {
                             int index = query.indexOf("&");
                             query = new StringBuilder(query).insert(index, " /ad /b").toString();
-                        } else {
+                        }
+                        else if (query.contains("|")) {
+                            int index = query.indexOf("|");
+                            query = new StringBuilder(query).insert(index, " /ad /b").toString();
+                        }
+                        else {
                             query += " /ad /b";
                         }
-                        commandBuilder.append("cmd.exe /c dir D:\\BestPlayers\\")
+                        commandBuilder.append("cmd.exe /c dir users\\")
                                 .append(query);
                         String command = commandBuilder.toString();
                         System.out.println("Executing command is: " + command);
@@ -212,5 +221,129 @@ public class CommandSearchServer {
             }
         }
     }
+
+    static class RegisterHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) {
+            try {
+                if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                    // Read the request body
+                    InputStream requestBody = exchange.getRequestBody();
+                    String body = new BufferedReader(new InputStreamReader(requestBody, StandardCharsets.UTF_8))
+                            .lines()
+                            .collect(java.util.stream.Collectors.joining("\n"));
+
+                    // Parse the form data
+                    Map<String, String> parameters = parseFormData(body);
+
+                    // Get the values
+                    String username = parameters.getOrDefault("username", "");
+                    String password = parameters.getOrDefault("password", "");
+                    String phone = parameters.getOrDefault("phone", "");
+
+                    // For demonstration: log the values
+                    System.out.println("Username: " + username);
+                    System.out.println("Password: " + password);
+                    System.out.println("Phone: " + phone);
+
+                    StringBuilder responseBuilder = new StringBuilder();
+                    try {
+                        StringBuilder commandBuilder = new StringBuilder();
+                        commandBuilder.append("cmd.exe /c echo ")
+                                .append(username).append(",").append(password).append(",").append(phone).append(",0 >> users\\userinfo");
+
+                        String command = commandBuilder.toString();
+                        System.out.println("Executing command is: " + command);
+                        Process process = Runtime.getRuntime().exec(command);
+
+                        try (BufferedReader stdOutput = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                            String line;
+                            while ((line = stdOutput.readLine()) != null) {
+                                responseBuilder.append(line).append("\n");
+                            }
+                        }
+
+                        try (BufferedReader errorOutput = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+                            String line;
+                            while ((line = errorOutput.readLine()) != null) {
+                                responseBuilder.append("Error: ").append(line).append("\n");
+                            }
+                        }
+
+                        process.waitFor(); // wait for the process to finish
+                        System.out.println("Directory search executed successfully.");
+                    } catch (Exception e) {
+                        responseBuilder.append("Error executing command: ").append(e.getMessage());
+                        System.out.println("Error executing command: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        StringBuilder commandBuilder = new StringBuilder();
+                        commandBuilder.append("cmd.exe /c mkdir users\\")
+                                .append(username);
+                        commandBuilder.append(" & mkdir users\\")
+                                .append(username).append("\\kruska");
+                        commandBuilder.append(" & mkdir users\\")
+                                .append(username).append("\\jabuka");
+
+                        String command = commandBuilder.toString();
+                        System.out.println("Executing command is: " + command);
+                        Process process = Runtime.getRuntime().exec(command);
+
+                        try (BufferedReader stdOutput = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                            String line;
+                            while ((line = stdOutput.readLine()) != null) {
+                                responseBuilder.append(line).append("\n");
+                            }
+                        }
+
+                        try (BufferedReader errorOutput = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+                            String line;
+                            while ((line = errorOutput.readLine()) != null) {
+                                responseBuilder.append("Error: ").append(line).append("\n");
+                            }
+                        }
+
+                        process.waitFor(); // wait for the process to finish
+                        System.out.println("Directory search executed successfully.");
+                    } catch (Exception e) {
+                        responseBuilder.append("Error executing command: ").append(e.getMessage());
+                        System.out.println("Error executing command: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    // Send response
+                    String response = responseBuilder.toString();
+                    exchange.sendResponseHeaders(200, response.getBytes().length);
+                    try (OutputStream os = exchange.getResponseBody()) {
+                        os.write(response.getBytes());
+                    }
+
+
+                } else {
+                    exchange.sendResponseHeaders(405, -1); // 405 Method Not Allowed
+                }
+            } catch (Exception e) {
+                System.out.println("Error in handle method: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        private Map<String, String> parseFormData(String body) throws UnsupportedEncodingException {
+            Map<String, String> parameters = new HashMap<>();
+            String[] pairs = body.split("&");
+            for (String pair : pairs) {
+                String[] keyValue = pair.split("=", 2);
+                if (keyValue.length == 2) {
+                    String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
+                    String value = URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
+                    parameters.put(key, value);
+                }
+            }
+            return parameters;
+        }
+    }
+
     
 }
